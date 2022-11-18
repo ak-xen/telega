@@ -95,15 +95,6 @@ async def id_find(id):
             return names, result
 
 
-async def put_all_keys(id):
-    async with aiosqlite.connect('data/data.db') as db:
-        async with db.execute(f'SELECT key FROM keys WHERE acces="{id}"') as cursor:
-            keys = await cursor.fetchall()
-            keys = [str(i[0]) for i in keys]
-            await del_status(keys, id)
-            return keys
-
-
 async def edit_description(get_addr, new_description):
     async with aiosqlite.connect('data/data.db') as db:
         await db.execute(f"UPDATE keys SET description='{new_description}' WHERE get_addr='{get_addr}'")

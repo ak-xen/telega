@@ -20,7 +20,7 @@ async def add_key(message: types.Message, command: CommandObject):
             await asyncio.sleep(1)
             await message.answer_document(html_table)
             await asyncio.sleep(3)
-            await message.answer('<b>Документ готов. Откройте его в любом из браузеров вашего утсройства!</b>')
+            await message.answer('<b>Документ готов. Откройте его в любом из браузеров вашего устройства!</b>')
             await remove_file(path)
         except (ValueError, FileNotFoundError):
             await message.answer('<b>Не правильный формата даты! Или в этот день не было запросов ключей!</b>')
