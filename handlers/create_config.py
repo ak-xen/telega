@@ -1,9 +1,12 @@
 import asyncio
+import support
 
 from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+
+from data.config_data.config_creator import transliteration
 from keyboards import commutator_kb
 from filters.id_filter import IsTrueUsers
 from data.config_data import config_creator
@@ -95,7 +98,8 @@ async def print_addr(message: types.Message, state: FSMContext):
         await state.clear()
         await message.answer('<b>Режим запроса адресов выключен!</b>')
         return
-    conf_dict['addr_station'] = message.text
+    addr = await transliteration(message.text)
+    conf_dict['addr_station'] = addr
     await message.answer('<b>Ожидайте, идет конфигурация!</b>')
     await asyncio.sleep(1)
     text = await config_creator.output_config(conf_dict)
@@ -104,5 +108,7 @@ async def print_addr(message: types.Message, state: FSMContext):
                                                     text)
     file = types.FSInputFile(path_to_file)
     await message.answer_document(file)
+    await asyncio.sleep(3)
+    await support.remove_file(path_to_file)
     await state.clear()
 

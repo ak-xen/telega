@@ -73,7 +73,7 @@ y'''
 100pass
 100pass
 create vlan management-{conf_dict['vlan']} tag {conf_dict['vlan']}
-config ipif System ipaddress {conf_dict['ip']}/{conf_dict['netmask']}vlan management-{conf_dict['vlan']} state enable
+config ipif System ipaddress {conf_dict['ip']}/{conf_dict['netmask']} vlan management-{conf_dict['vlan']} state enable
 create iproute default {conf_dict['gateway']}
 config vlan management-2434 add tagged 25-26
 config snmp system_location {conf_dict['addr_station']}
@@ -179,24 +179,17 @@ save'''
 
 async def config_file(addr, com, ip, text):
     addr = await transliteration(addr)
-    addr = '_'.join(addr.split())
     com = '_'.join(com.split())
     com = com.replace('/', ':')
     name_file = f'{addr}_{com}_{ip}'
     path = fr'data/config_data/temp/{name_file}.cfg'
-    print(path)
-    print('st1')
     await make_file(path, text)
-    print('st4')
     return path
 
 
 async def make_file(path, text):
-    print('st1/1', path)
     with open(path, 'w', encoding='utf-8') as file:
-        print('st2')
         file.write(text)
-        print('st3')
         file.close()
 
 
@@ -212,4 +205,5 @@ async def transliteration(addr):
               'Ю': 'U', 'Я': 'YA'}
     for key in slovar:
         addr = addr.replace(key, slovar[key])
+    addr = '_'.join(addr.split())
     return addr
