@@ -27,8 +27,9 @@ async def print_addr(message: types.Message, state: FSMContext):
         return
 
     try:
-        adres = ''.join(message.text.lower().split())
-        key, addr, description, acces, time, date = await get_key_status(adres)
+        address = ''.join(message.text.lower().split())
+        address = address.replace('ё', "е")
+        key, addr, description, acces, time, date = await get_key_status(address)
         await message.answer(
             f'Адрес: {addr}\nДоступ: {description}\nКлюч у: {acces} Время: {time} Дата: {date}')
     except:

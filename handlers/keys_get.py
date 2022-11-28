@@ -28,6 +28,7 @@ async def print_addr(message: types.Message, state: FSMContext):
 
     try:
         addr = ''.join(message.text.lower().split())
+        addr = addr.replace('ё', "е")
         key, addr, description, acces, time, date = await get_key_status(addr)
         if acces == 'False' and await(set_status(key, str(message.from_user.id).strip())):
             await message.answer(text=f'<u>Ключ №{key} взят !</u>')
