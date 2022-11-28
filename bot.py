@@ -2,7 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from config import TOKEN
 from support import on_startup
-from handlers import put_key, add_new_key, get_key_log, help_hand
+from handlers import put_key, add_new_key, get_key_log, help_hand,start
 from handlers import add_new_id, del_id, view_all_id, one_person_stats, get_daily_logs
 from handlers import edit_desc, create_config, get_acces, keys_get, backup_db
 
@@ -11,6 +11,7 @@ async def main():
     bot = Bot(token=TOKEN, parse_mode='HTML')
     dp = Dispatcher()
 
+    dp.include_router(start.starts)
     dp.include_router(put_key.put)
     dp.include_router(add_new_key.add)
     dp.include_router(add_new_id.add_id)

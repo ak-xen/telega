@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from data.sql_connection_keys import set_status, get_key_status
-from keyboards import kb_start
+from keyboards import kb_start, started_kb
 from filters.id_filter import IsTrueUsers
 
 keys = Router()
@@ -23,7 +23,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def print_addr(message: types.Message, state: FSMContext):
     if message.text == '/стоп':
         await state.clear()
-        await message.answer('<b>Режим "Ключи" выключен!</b>')
+        await message.answer('<b>Режим "Ключи" выключен!</b>', reply_markup=started_kb.btns_start())
         return
 
     try:

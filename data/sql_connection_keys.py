@@ -26,17 +26,31 @@ async def get_key_status(addres: str):
         return key, addr, description, acces, time, date
 
 
+async def get_access(key):
+    async with aiosqlite.connect('data/data.db') as db:
+        async with db.execute(f"SELECT acces FROM keys "
+                              f"WHERE key='{key}';") as cursor:
+            acces = await cursor.fetchone()
+            acces = acces[0]
+            return True if acces != 'False' else False
+
+
 async def get_log_path(db, key, name, id):
     async with db.execute(f'SELECT addr_log FROM keys WHERE key="{key}"') as cursor:
         path = await cursor.fetchone()
         path = path[0]
         if not path:
-            if key.isdigit():
+            try:
+                key = int(key)
+            except ValueError:
+                pass
+            if type(key) is int:
                 path = f"data/logs/{key}_log.txt"
             await db.execute(f"UPDATE keys SET addr_log='{path}' WHERE key='{key}'")
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(f'Ключ взял: {name} : {id} Время: {time.strftime("%H:%M %d.%m.%Y")}\n')
             await db.commit()
+
         else:
             with open(path, 'a', encoding='utf-8') as file:
                 file.write(f'Ключ взял: {name} : {id} Время: {time.strftime("%H:%M %d.%m.%Y")}\n')

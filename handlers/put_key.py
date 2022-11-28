@@ -10,8 +10,15 @@ put = Router()
 async def put_key(message: types.Message, command: CommandObject):
     if command.args:
         key = command.args.split(',')
-        await sql_connection_keys.del_status(key, str(message.from_user.id))
-        key = ','.join(key)
-        await message.answer(f'<u>Ключ №{key} положен на место!</u>')
+        keys = []
+        for k in key:
+            if await sql_connection_keys.get_access(k):
+                keys.append(k)
+        if keys:
+            await sql_connection_keys.del_status(keys, str(message.from_user.id))
+            keys = ','.join(keys)
+            await message.answer(f'<u>Ключ №{keys} положен на место!</u>')
+        else:
+            await message.answer('<u>Нет ключей, которые можно положить!</u>')
     else:
         await message.answer('<b>Укажите номер ключа, который хотите положить после команды /put !</b>')
