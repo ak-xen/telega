@@ -1,9 +1,9 @@
 # Файл для связи с таблицей keys
 import asyncio
 import aiosqlite
-import time
+from datetime import datetime, timedelta
 from data import create_daily_log
-
+from config import ADMINS
 
 async def get_key_status(addres: str):
     '''
@@ -26,16 +26,25 @@ async def get_key_status(addres: str):
         return key, addr, description, acces, time, date
 
 
-async def get_access(key):
+async def get_access(key, uid):
     async with aiosqlite.connect('data/data.db') as db:
         async with db.execute(f"SELECT acces FROM keys "
                               f"WHERE key='{key}';") as cursor:
             acces = await cursor.fetchone()
             acces = acces[0]
-            return True if acces != 'False' else False
+            return True if (acces == int(uid) or uid in ADMINS) else False
+
+
+async def get_all_keys():
+    async with aiosqlite.connect('data/data.db') as db:
+        async with db.execute(f"SELECT key FROM keys ;") as cursor:
+            keys = await cursor.fetchall()
+            return keys
 
 
 async def get_log_path(db, key, name, id):
+    delta = timedelta(hours=1)
+    time = datetime.now() + delta
     async with db.execute(f'SELECT addr_log FROM keys WHERE key="{key}"') as cursor:
         path = await cursor.fetchone()
         path = path[0]
@@ -64,7 +73,8 @@ async def set_status(key: str, id: str):
         async with db.execute(f'SELECT addr FROM keys WHERE key="{key}"') as cur:
             addr = await cur.fetchone()
             addr = addr[0]
-
+        delta = timedelta(hours=1)
+        time = datetime.now() + delta
         await db.execute(
             f"UPDATE keys SET acces='{id}', time='{time.strftime('%H:%M')}', date='{time.strftime('%d.%m.%Y')}' WHERE key='{key}'")
         await db.commit()
@@ -75,6 +85,8 @@ async def set_status(key: str, id: str):
 
 
 async def del_status(key, id):
+    delta = timedelta(hours=1)
+    time = datetime.now() + delta
     async with aiosqlite.connect('data/data.db') as db:
         for item in key:
             async with db.execute(f'SELECT name FROM personals_id WHERE id="{id}"') as cursor:
